@@ -1,0 +1,33 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: nats
+  namespace: kube-system
+spec:
+  repo: https://nats-io.github.io/k8s/helm/charts/
+  chart: nats
+  targetNamespace: nats
+  createNamespace: true
+
+  valuesContent: |-
+    config:
+      jetstream:
+        enabled: true
+
+        fileStore:
+          enabled: true
+          pvc: 
+            enabled: true
+            size: 1Gi
+
+        memoryStore:
+          enabled: true
+          maxSize: 256Mi
+
+    container:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 256Mi

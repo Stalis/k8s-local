@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nats-monitor
+  namespace: nats
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`nats-monitor.localhost`)
+      kind: Rule
+      services:
+        - name: nats-headless
+          port: 8222

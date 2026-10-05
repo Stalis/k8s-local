@@ -1,0 +1,42 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+
+metadata:
+  name: dev
+
+servers: 1
+agents: 1
+
+ports:
+  - port: 80:80
+    nodeFilters:
+      - loadbalancer
+
+  - port: 443:443
+    nodeFilters:
+      - loadbalancer
+
+  - port: 4222:4222
+    nodeFilters:
+      - loadbalancer
+
+volumes:
+  - volume: ${PWD}/manifests:/var/lib/rancher/k3s/server/manifests/custom
+    nodeFilters:
+      - server:0
+
+  - volume: ${PWD}/pvc/server-0:/data
+    nodeFilters:
+      - server:0
+
+  - volume: ${PWD}/pvc/agent-0:/data
+    nodeFilters:
+      - agent:0
+
+
+options:
+  k3s:
+    extraArgs:
+      - arg: --default-local-storage-path=/data/storage
+        nodeFilters:
+          - server:0

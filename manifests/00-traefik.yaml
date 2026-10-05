@@ -1,0 +1,23 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+
+spec:
+  valuesContent: |-
+    ingressRoute:
+      dashboard:
+        enabled: true
+        entryPoints:
+          - web
+        matchRule: Host(`traefik.localhost`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+
+  
+    ports:
+      nats:
+        port: 4222
+        expose:
+          default: true
+        exposedPort: 4222
+        protocol: TCP
