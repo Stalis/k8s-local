@@ -10,26 +10,43 @@
 - NATS с включённым JetStream;
 - локальное persistent storage через каталог `pvc/`.
 
-## Требования
+## Prerequisites
 
-Установите и запустите Docker Desktop, затем установите:
+Для macOS нужны Homebrew и Docker CLI. Docker Desktop не используется: Docker
+daemon запускается в Colima.
 
-- `k3d`;
-- `kubectl`;
-- `yq`;
-- `make` и `envsubst`.
-
-Например, через Homebrew:
+Подготовить окружение одной командой можно из корня репозитория:
 
 ```bash
-brew install k3d kubectl yq gettext
+make deps
 ```
 
+Target устанавливает недостающие Homebrew-пакеты и безопасно повторяется:
+
+- `colima` — Docker runtime;
+- `docker` — Docker CLI;
+- `kubectl` — Kubernetes CLI;
+- `k3d` — локальный Kubernetes-кластер;
+- `helm` — управление Helm-чартами;
+- `yq` — чтение имени кластера из `k3d.yaml`;
+- `gettext` — предоставляет `envsubst`, используемый при запуске.
+
+Затем `make deps` запускает Colima и проверяет доступность Docker daemon.
 Если `envsubst` не находится в `PATH`, добавьте GNU gettext:
 
 ```bash
 export PATH="$(brew --prefix gettext)/bin:$PATH"
 ```
+
+Эквивалентные команды вручную:
+
+```bash
+brew install colima docker kubectl k3d helm yq gettext
+colima start
+docker info
+```
+
+NATS CLI в текущем проекте не используется и отдельно не устанавливается.
 
 ## Запуск
 
