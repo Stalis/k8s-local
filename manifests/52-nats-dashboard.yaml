@@ -1,14 +1,76 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nats-dashboard-config
+  namespace: nats
+data:
+  config.json: |
+    {
+      "server": {
+        "name": "Local NATS",
+        "url": "http://nats.localhost/proxy/"
+      },
+      "hideServerInput": true
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-dashboard
+  namespace: nats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats-dashboard
+  template:
+    metadata:
+      labels:
+        app: nats-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: mdawar/nats-dashboard:latest
+          env:
+            - name: REVERSE_PROXY_UPSTREAM
+              value: "nats-headless:8222"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /srv/config.json
+              subPath: config.json
+
+      volumes:
+        - name: config
+          configMap:
+            name: nats-dashboard-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-dashboard
+  namespace: nats
+spec:
+  selector:
+    app: nats-dashboard
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: nats-monitor
+  name: nats-dashboard
   namespace: nats
 spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`nats-monitor.localhost`)
+    - match: Host(`nats.localhost`)
       kind: Rule
       services:
-        - name: nats-headless
-          port: 8222
+        - name: nats-dashboard
+          port: 80
