@@ -20,6 +20,10 @@ ports:
     nodeFilters:
       - loadbalancer
 
+  - port: 5432:5432
+    nodeFilters:
+      - loadbalancer
+
 volumes:
   - volume: ${PWD}/manifests:/var/lib/rancher/k3s/server/manifests/custom
     nodeFilters:
